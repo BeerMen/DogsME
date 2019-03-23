@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/like_menu"
+        android:icon="@drawable/baseline_favorite_white_24"
+        android:title="like" />
+
+    <item
+        android:id="@+id/download"
+        android:icon="@drawable/baseline_save_alt_white_24"
+        android:title="Download" />
+
+    <item
+        android:id="@+id/favorite"
+        android:icon="@drawable/baseline_stars_white_24"
+        android:title="favorite" />
+</menu>

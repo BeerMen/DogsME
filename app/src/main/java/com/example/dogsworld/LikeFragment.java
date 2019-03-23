@@ -44,7 +44,7 @@ public class LikeFragment extends Fragment implements View.OnClickListener {
     ImageView btnDisLike;
     ImageButton btnFavorite;
     List<DogInfo> postDogInfo;
-    CardView mCardView;
+
 
     FrameLayout bigLike;
     FrameLayout like;
@@ -75,8 +75,7 @@ public class LikeFragment extends Fragment implements View.OnClickListener {
         btnDisLike.setOnClickListener(this::onClick);
         textName = view.findViewById(R.id.text_name_dog);
         textCharacteristic = view.findViewById(R.id.text_characteristic_dog);
-        mCardView = view.findViewById(R.id.card_view);
-        mCardView.setOnClickListener(this::onClick);
+
         bigLike = view.findViewById(R.id.bog_like_fragnebt);
         like = view.findViewById(R.id.like_fragment);
         super.onViewCreated(view, savedInstanceState);
@@ -124,8 +123,6 @@ public class LikeFragment extends Fragment implements View.OnClickListener {
                 if (manyOfDogs.get(0).breeds.isEmpty()){
                     getDogsFromApi();
                 }else {
-
-                    Log.d("logmeTEg","dogInfo url" + manyOfDogs.get(0).url);
                     Picasso.get().load(manyOfDogs.get(0).url).into(likeImage);
                     textName.setText("Порода " + manyOfDogs.get(0).breeds.get(0).name);
                     textCharacteristic.setText("Длина жизни " + manyOfDogs.get(0).breeds.get(0).life_span + "\n"
@@ -141,27 +138,21 @@ public class LikeFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()){
             case R.id.like:
             if (postDogInfo != null ){
-                CreateVoice.post(gson.toJson(new DogPost(postDogInfo.get(0).id,1,MainActivity.sub_id)),SaveLike,JSON);
+                CreateVoice.post(gson.toJson(new DogPost(postDogInfo.get(0).id,1,MainActivity.sub_id)),SaveLike,JSON,getActivity());
                 getDogsFromApi();
                 break;
             }
             break;
 
             case R.id.btn_favorite:
-                Log.d("DBagTest","нажатие фаварита" + postDogInfo);
                 if (postDogInfo != null ) {
-                    Log.d("DBagTest","нажатие фаварита");
                     CreateVoice.post(gson.toJson(new DogPostFavorites(postDogInfo.get(0).id,MainActivity.sub_id)),
-                            "https://api.thedogapi.com/v1/favourites", JSON);
+                            "https://api.thedogapi.com/v1/favourites", JSON,getActivity());
                     break;
                 }
                 break;
             case R.id.dislike:
                 getDogsFromApi();
-                break;
-            case R.id.card_view:
-
-
                 break;
         }
     }

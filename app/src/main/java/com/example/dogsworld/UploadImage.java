@@ -26,11 +26,7 @@ public class UploadImage {
 
         try {
             File sourceFile = file;
-
-            //Log.d("TegDBag", "File...::::" + sourceFile + " : " + sourceFile.exists());
-
             final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
-
             RequestBody requestBody1 = new MultipartBody.Builder().setType(MultipartBody.FORM)
                     .addFormDataPart("sub_id", sub_id)
                     .addFormDataPart("file", "file", RequestBody.create(MEDIA_TYPE_PNG, sourceFile))

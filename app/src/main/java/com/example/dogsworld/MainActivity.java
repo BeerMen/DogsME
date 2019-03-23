@@ -21,22 +21,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        CreateVoice createVoice = new CreateVoice(this);
         setContentView(R.layout.activity_main);
         like = findViewById(R.id.like_fragment);
         upload = findViewById(R.id.upload_fragment);
         favorites = findViewById(R.id.favorites_fragment);
         btnNavView = findViewById(R.id.navigation);
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         LikeFragment likeFragment = new LikeFragment();
         UploadFragment uploadFragment = new UploadFragment();
         FavoritesFragment favoritesFragment = new FavoritesFragment();
-
         fragmentTransaction.add(R.id.like_fragment,likeFragment);
-
         fragmentTransaction.add(R.id.favorites_fragment,favoritesFragment);
-
         fragmentTransaction.add(R.id.upload_fragment,uploadFragment);
         fragmentTransaction.commit();
 

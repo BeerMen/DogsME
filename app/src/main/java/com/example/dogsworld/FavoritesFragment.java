@@ -69,7 +69,6 @@ public class FavoritesFragment extends Fragment implements SwipeRefreshLayout.On
         mClient.newCall(mRequest).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.d("log", e.toString());
                 e.printStackTrace();
             }
 
@@ -84,7 +83,6 @@ public class FavoritesFragment extends Fragment implements SwipeRefreshLayout.On
                     Type listType = new TypeToken<ArrayList<DogInfo>>() {
                     }.getType();
                     List<DogInfo> manyOfDogs = gson.fromJson(resp, listType);
-                    Log.d("TegDBag", "getFavoriteList dog size " + manyOfDogs.size());
                     setListFavorites(manyOfDogs);
                 }
             }
@@ -96,17 +94,15 @@ public class FavoritesFragment extends Fragment implements SwipeRefreshLayout.On
         List<String> mStringArrayList = new ArrayList<>();
         for (int i = manyOfDogs.size() - 1; i > -1; i--) {
             mStringArrayList.add(manyOfDogs.get(i).image_id);
-            Log.d("TegDBag", "setListFavorites dog size " + manyOfDogs.size());
         }
 
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                Log.d("TegDBag", "setListFavorites list size " + mStringArrayList.size());
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                 mRecyclerView.setLayoutManager(linearLayoutManager);
                 mRecyclerView.setHasFixedSize(true);
-                DogsAdapter dogsAdapter = new DogsAdapter(mStringArrayList.size(),mStringArrayList);
+                DogsAdapter dogsAdapter = new DogsAdapter(mStringArrayList);
                 mRecyclerView.setAdapter(dogsAdapter);
             }
         });

@@ -17,6 +17,7 @@
         android:id="@+id/card_view"
         card_view:cardCornerRadius="4dp"
         android:layout_above="@+id/like">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">

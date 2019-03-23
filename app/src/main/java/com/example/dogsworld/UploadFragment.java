@@ -47,9 +47,7 @@ public class UploadFragment extends Fragment implements View.OnClickListener {
             if (data != null) {
                 try {
                     Uri uri = Uri.parse(data.getData().toString());
-                    Log.d("TegDBag", "Uri: " + uri);
                     File file = FileUtils.getFileFromUri(getActivity(), uri);
-                    Log.d("TegDBag","File: " + file);
                     UploadImage.uploadImage(MainActivity.sub_id,file,getActivity());
 
                 } catch (Exception x){
@@ -156,7 +154,7 @@ public class UploadFragment extends Fragment implements View.OnClickListener {
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                 mRecyclerView.setLayoutManager(linearLayoutManager);
                 mRecyclerView.setHasFixedSize(true);
-                DogsAdapter dogsAdapter = new DogsAdapter(mStringArrayList.size(),mStringArrayList);
+                DogsAdapter dogsAdapter = new DogsAdapter(mStringArrayList);
                 mRecyclerView.setAdapter(dogsAdapter);
             }
         });

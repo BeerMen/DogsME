@@ -12,10 +12,10 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class DogsAdapter extends RecyclerView.Adapter<DogsAdapter.DogViewHolder>{
-    int numerItem;
-    List<String> urls;
-    public DogsAdapter(int numberItem, List<String> urls) {
-        this.numerItem = numberItem;
+
+    private List<String> urls;
+    public DogsAdapter( List<String> urls) {
+
         this.urls = urls;
     }
 
@@ -23,9 +23,7 @@ public class DogsAdapter extends RecyclerView.Adapter<DogsAdapter.DogViewHolder>
     @Override
     public DogViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
 
-        LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-
-        return new DogViewHolder(inflater.inflate(R.layout.list_item,viewGroup,false));
+        return new DogViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item,viewGroup,false));
     }
 
     @Override
@@ -35,7 +33,7 @@ public class DogsAdapter extends RecyclerView.Adapter<DogsAdapter.DogViewHolder>
 
     @Override
     public int getItemCount() {
-        return numerItem;
+        return urls.size();
     }
 
     class DogViewHolder extends RecyclerView.ViewHolder {

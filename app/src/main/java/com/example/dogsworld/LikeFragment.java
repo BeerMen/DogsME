@@ -6,14 +6,9 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -49,7 +44,7 @@ public class LikeFragment extends Fragment implements View.OnClickListener {
     FrameLayout bigLike;
     FrameLayout like;
     Gson gson = new Gson();
-    private final String SaveLike = "https://api.thedogapi.com/v1/votes?sub_id=" + MainActivity.sub_id;
+    private final String SaveLike = "https://api.thedogapi.com/v1/votes?SUB_ID=" + MainActivity.SUB_ID;
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
     @Override
@@ -61,7 +56,7 @@ public class LikeFragment extends Fragment implements View.OnClickListener {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.like_fragment,null);
+        return inflater.inflate(R.layout.fragment_like,null);
     }
 
     @Override
@@ -76,7 +71,7 @@ public class LikeFragment extends Fragment implements View.OnClickListener {
         textName = view.findViewById(R.id.text_name_dog);
         textCharacteristic = view.findViewById(R.id.text_characteristic_dog);
 
-        bigLike = view.findViewById(R.id.bog_like_fragnebt);
+        bigLike = view.findViewById(R.id.bog_like_fragment);
         like = view.findViewById(R.id.like_fragment);
         super.onViewCreated(view, savedInstanceState);
     }
@@ -138,7 +133,7 @@ public class LikeFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()){
             case R.id.like:
             if (postDogInfo != null ){
-                CreateVoice.post(gson.toJson(new DogPost(postDogInfo.get(0).id,1,MainActivity.sub_id)),SaveLike,JSON,getActivity());
+                CreateVoice.post(gson.toJson(new DogPost(postDogInfo.get(0).id,1,MainActivity.SUB_ID)),SaveLike,JSON,getActivity());
                 getDogsFromApi();
                 break;
             }
@@ -146,7 +141,7 @@ public class LikeFragment extends Fragment implements View.OnClickListener {
 
             case R.id.btn_favorite:
                 if (postDogInfo != null ) {
-                    CreateVoice.post(gson.toJson(new DogPostFavorites(postDogInfo.get(0).id,MainActivity.sub_id)),
+                    CreateVoice.post(gson.toJson(new DogPostFavorites(postDogInfo.get(0).id,MainActivity.SUB_ID)),
                             "https://api.thedogapi.com/v1/favourites", JSON,getActivity());
                     break;
                 }

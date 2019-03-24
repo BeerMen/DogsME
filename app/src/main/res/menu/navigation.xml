@@ -3,15 +3,15 @@
     <item
         android:id="@+id/like_menu"
         android:icon="@drawable/baseline_favorite_white_24"
-        android:title="like" />
+        android:title="@string/like" />
 
     <item
         android:id="@+id/download"
         android:icon="@drawable/baseline_save_alt_white_24"
-        android:title="Download" />
+        android:title="@string/download" />
 
     <item
         android:id="@+id/favorite"
         android:icon="@drawable/baseline_stars_white_24"
-        android:title="favorite" />
+        android:title="@string/favorite" />
 </menu>

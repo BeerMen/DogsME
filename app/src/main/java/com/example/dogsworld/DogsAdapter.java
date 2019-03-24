@@ -9,21 +9,27 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DogsAdapter extends RecyclerView.Adapter<DogsAdapter.DogViewHolder>{
 
-    private List<String> urls;
-    public DogsAdapter( List<String> urls) {
+    private List<String> urls = new ArrayList<>();
 
-        this.urls = urls;
+    public DogsAdapter() {
+
+    }
+
+    public void addUrls(List<String> urls) {
+        this.urls.addAll(urls);
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public DogViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
 
-        return new DogViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item,viewGroup,false));
+        return new DogViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item_dog,viewGroup,false));
     }
 
     @Override

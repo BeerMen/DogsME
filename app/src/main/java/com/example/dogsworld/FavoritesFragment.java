@@ -9,11 +9,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -38,11 +36,27 @@ public class FavoritesFragment extends Fragment implements SwipeRefreshLayout.On
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.favorites_fragment, null);
+        return inflater.inflate(R.layout.fragment_favorites, null);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+        ApiClient apiClient = new ApiClient();
+
+        apiClient.getDogs(new DogResult() {
+            @Override
+            public void onResult(List<DogInfo> dogs) {
+
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        })
+
+
         mRecyclerView = view.findViewById(R.id.recycler);
         mSwipeRefreshLayout = view.findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(this);
@@ -52,7 +66,7 @@ public class FavoritesFragment extends Fragment implements SwipeRefreshLayout.On
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 
-        getFavoriteList(MainActivity.sub_id);
+        getFavoriteList(MainActivity.SUB_ID);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -63,7 +77,7 @@ public class FavoritesFragment extends Fragment implements SwipeRefreshLayout.On
 
         Request mRequest = new Request.Builder()
                 .header("x-api-key", "a00fade5-8415-4580-8fec-5fee491ce7ce")
-                .url("https://api.thedogapi.com/v1/favourites?sub_id=" + sub_id)
+                .url("https://api.thedogapi.com/v1/favourites?SUB_ID=" + sub_id)
                 .build();
 
         mClient.newCall(mRequest).enqueue(new Callback() {
@@ -102,7 +116,7 @@ public class FavoritesFragment extends Fragment implements SwipeRefreshLayout.On
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
                 mRecyclerView.setLayoutManager(linearLayoutManager);
                 mRecyclerView.setHasFixedSize(true);
-                DogsAdapter dogsAdapter = new DogsAdapter(mStringArrayList);
+                DogsAdapter dogsAdapter = new DogsAdapter();
                 mRecyclerView.setAdapter(dogsAdapter);
             }
         });
@@ -110,7 +124,7 @@ public class FavoritesFragment extends Fragment implements SwipeRefreshLayout.On
 
     @Override
     public void onRefresh() {
-        getFavoriteList(MainActivity.sub_id);
+        getFavoriteList(MainActivity.SUB_ID);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

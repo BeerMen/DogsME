@@ -28,7 +28,7 @@ public class UploadImage {
             File sourceFile = file;
             final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
             RequestBody requestBody1 = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                    .addFormDataPart("sub_id", sub_id)
+                    .addFormDataPart("SUB_ID", sub_id)
                     .addFormDataPart("file", "file", RequestBody.create(MEDIA_TYPE_PNG, sourceFile))
                     .build();
 

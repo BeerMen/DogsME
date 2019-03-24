@@ -1,56 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#537674">
 
     <android.support.v7.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="15dp"
+        android:layout_above="@+id/like"
         android:layout_gravity="center"
-        card_view:cardBackgroundColor="#ffffff"
-        android:id="@+id/card_view"
-        card_view:cardCornerRadius="4dp"
-        android:layout_above="@+id/like">
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="15dp"
+        app:cardBackgroundColor="#ffffff"
+        app:cardCornerRadius="4dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <ImageView
+                android:id="@+id/image_like"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-                android:scaleType="fitXY"
-                android:id="@+id/image_like"
-                />
+                android:scaleType="fitXY" />
+
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/text_name_dog"
-                android:layout_below="@+id/image_like"
-                android:layout_marginTop="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginLeft="15dp"
-                android:textColor="#000000"
-                />
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/text_characteristic_dog"
-                android:layout_below="@id/text_name_dog"
+                android:layout_below="@+id/image_like"
+                android:layout_marginLeft="15dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginRight="15dp"
+                android:textColor="#000000" />
+
+            <TextView
+                android:id="@+id/text_characteristic_dog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text_name_dog"
                 android:layout_marginLeft="15dp"
-                android:textColor="#585858"
-                />
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="15dp"
+                android:textColor="#585858" />
 
         </RelativeLayout>
-
 
 
     </android.support.v7.widget.CardView>
@@ -59,30 +57,28 @@
         android:id="@+id/like"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="8dp"
-        android:src="@drawable/ic_thumb_up_outline_black_36dp"
-        android:layout_alignParentBottom="true"
- />
+        android:src="@drawable/ic_thumb_up_outline_black_36dp" />
 
     <ImageView
         android:id="@+id/dislike"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
-        android:src="@drawable/ic_thumb_down_outline_black_36dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
- />
+        android:src="@drawable/ic_thumb_down_outline_black_36dp" />
+
     <ImageButton
+        android:id="@+id/btn_favorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:id="@+id/btn_favorite"
         android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
-        android:background="@drawable/baseline_stars_white_36"
-        />
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/baseline_stars_white_36" />
 
 </RelativeLayout>

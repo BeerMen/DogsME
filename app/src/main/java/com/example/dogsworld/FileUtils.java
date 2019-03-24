@@ -10,11 +10,13 @@ import android.util.Log;
 
 import java.io.File;
 
+import timber.log.Timber;
+
 public class FileUtils {
 
     public static File getFileFromUri(Context context, Uri uri) {
         if (context == null) {
-            Log.d("TegDBag", "Context is null.");
+            Timber.d("Context is null.");
             return null;
         }
 

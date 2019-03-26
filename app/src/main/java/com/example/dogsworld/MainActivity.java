@@ -12,8 +12,6 @@ import android.widget.FrameLayout;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String SUB_ID = "44332213";
-
     private FrameLayout like;
     private FrameLayout upload;
     private FrameLayout favorites;
@@ -68,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
                 UploadFragment uploadFragment = getUploadFragment();
                 if (uploadFragment != null) {
-                    uploadFragment.downImg(SUB_ID);
+                    uploadFragment.downImg();
                 }
 
                 break;
@@ -80,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
                 FavoritesFragment favoritesFragment = getFavoritesFragment();
                 if (favoritesFragment != null) {
-                    favoritesFragment.getFavoriteList(SUB_ID);
+                    favoritesFragment.getFavoriteList();
                 }
 
                 break;

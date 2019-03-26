@@ -1,8 +1,6 @@
 package com.example.dogsworld;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +13,8 @@ import android.view.ViewGroup;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -30,74 +30,85 @@ import okhttp3.ResponseBody;
 
 public class FavoritesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private RecyclerView mRecyclerView;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private RecyclerView recyclerView;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    DogsAdapter dogsAdapter;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_favorites, null);
+        return inflater.inflate(R.layout.fragment_favorites, container,false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
-        ApiClient apiClient = new ApiClient();
+//        ApiClient apiClient = new ApiClient();
+//
+//        apiClient.getDogs(new DogResult() {
+//            @Override
+//            public void onResult(List<DogInfo> dogs) {
+//
+//            }
+//
+//            @Override
+//            public void onError(Exception e) {
+//
+//            }
+//        })
 
-        apiClient.getDogs(new DogResult() {
-            @Override
-            public void onResult(List<DogInfo> dogs) {
 
-            }
-
-            @Override
-            public void onError(Exception e) {
-
-            }
-        })
+        recyclerView = view.findViewById(R.id.recycler);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
+        dogsAdapter = new DogsAdapter();
+        recyclerView.setAdapter(dogsAdapter);
 
 
-        mRecyclerView = view.findViewById(R.id.recycler);
-        mSwipeRefreshLayout = view.findViewById(R.id.swipe_container);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
+        swipeRefreshLayout = view.findViewById(R.id.swipe_container);
+        swipeRefreshLayout.setOnRefreshListener(this);
         super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 
-        getFavoriteList(MainActivity.SUB_ID);
+        getFavoriteList();
         super.onActivityCreated(savedInstanceState);
     }
 
-    public void getFavoriteList(String sub_id) {
+    public void getFavoriteList() {
         Gson gson = new Gson();
         OkHttpClient mClient;
         mClient = new OkHttpClient().newBuilder().build();
 
         Request mRequest = new Request.Builder()
-                .header("x-api-key", "a00fade5-8415-4580-8fec-5fee491ce7ce")
-                .url("https://api.thedogapi.com/v1/favourites?SUB_ID=" + sub_id)
+                .header(ServerDogsConstant.API_KAY_NAME, ServerDogsConstant.API_KAY)
+                .url(ServerDogsConstant.URL_GET_FAVORITE_LIST)
                 .build();
 
         mClient.newCall(mRequest).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NotNull Call call,@NotNull IOException e) {
                 e.printStackTrace();
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(@NotNull Call call,@NotNull Response response) throws IOException {
 
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful())
                         throw new IOException("Unexpected code" + response);
 
-                    String resp = responseBody.string();
-                    Type listType = new TypeToken<ArrayList<DogInfo>>() {
-                    }.getType();
-                    List<DogInfo> manyOfDogs = gson.fromJson(resp, listType);
-                    setListFavorites(manyOfDogs);
+                    if (responseBody != null){
+                        String resp = responseBody.string();
+                        Type listType = new TypeToken<ArrayList<DogInfo>>() {
+                        }.getType();
+                        List<DogInfo> manyOfDogs = gson.fromJson(resp, listType);
+                        setListFavorites(manyOfDogs);
+                    }
+
                 }
             }
         });
@@ -105,31 +116,17 @@ public class FavoritesFragment extends Fragment implements SwipeRefreshLayout.On
 
     private void setListFavorites(List<DogInfo> manyOfDogs) {
 
-        List<String> mStringArrayList = new ArrayList<>();
+        List<String> listImageId = new ArrayList<>();
         for (int i = manyOfDogs.size() - 1; i > -1; i--) {
-            mStringArrayList.add(manyOfDogs.get(i).image_id);
+            listImageId.add(manyOfDogs.get(i).image_id);
         }
-
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                mRecyclerView.setLayoutManager(linearLayoutManager);
-                mRecyclerView.setHasFixedSize(true);
-                DogsAdapter dogsAdapter = new DogsAdapter();
-                mRecyclerView.setAdapter(dogsAdapter);
-            }
-        });
+        recyclerView.post(() -> dogsAdapter.addUrls(listImageId));
     }
 
     @Override
     public void onRefresh() {
-        getFavoriteList(MainActivity.SUB_ID);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        },2000);
+        getFavoriteList();
+        swipeRefreshLayout.post(() ->
+            swipeRefreshLayout.setRefreshing(false));
     }
 }

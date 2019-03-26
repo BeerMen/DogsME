@@ -16,11 +16,11 @@ public class DogsAdapter extends RecyclerView.Adapter<DogsAdapter.DogViewHolder>
 
     private List<String> urls = new ArrayList<>();
 
-    public DogsAdapter() {
+    DogsAdapter() {
 
     }
 
-    public void addUrls(List<String> urls) {
+     void addUrls(List<String> urls) {
         this.urls.addAll(urls);
         notifyDataSetChanged();
     }
@@ -45,7 +45,7 @@ public class DogsAdapter extends RecyclerView.Adapter<DogsAdapter.DogViewHolder>
     class DogViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imDogs;
-        public DogViewHolder(@NonNull View itemView) {
+         DogViewHolder(@NonNull View itemView) {
             super(itemView);
             imDogs = itemView.findViewById(R.id.ivImg);
         }

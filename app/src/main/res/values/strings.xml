@@ -3,4 +3,12 @@
     <string name="like">like</string>
     <string name="download">Download</string>
     <string name="favorite">favorite</string>
+    <string name="already_added_favorites">Вы уже добавили в избранное</string>
+    <string name="no_download_image">Нету загруженных фотографий</string>
+    <string name="breed">Порода</string>
+    <string name="length_of_life">Длина жизни</string>
+    <string name="temperament">Темперамент</string>
+    <string name="bred_for">Разводят для</string>
+    <string name="no_dog">На Фото нет собак!</string>
+    <string name="good_upload">Фото успешно загружено на сервер</string>
 </resources>

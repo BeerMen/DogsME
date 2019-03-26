@@ -6,27 +6,26 @@ import android.net.Uri;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.File;
 
 import timber.log.Timber;
 
-public class FileUtils {
+ class FileUtils {
 
-    public static File getFileFromUri(Context context, Uri uri) {
+     static File getFileFromUri(Context context, Uri uri) {
         if (context == null) {
             Timber.d("Context is null.");
             return null;
         }
 
         if (uri == null) {
-            Log.d("TegDBag", "No uri.");
+            Timber.d("No uri.");
             return null;
         }
 
         if (!"content".equals(uri.getScheme())) {
-            Log.d("TegDBag", "Uri with invalid scheme.");
+            Timber.d("Uri with invalid scheme.");
             return null;
         }
 
@@ -42,23 +41,23 @@ public class FileUtils {
         );
 
         if (cursor == null || cursor.getCount() == 0) {
-            Log.d("TegDBag", "No result found.");
+            Timber.d("No result found.");
             return null;
         }
 
         if (!cursor.moveToFirst()) {
-            Log.d("TegDBag", "Cannot move cursor for result.");
+            Timber.d("Cannot move cursor for result.");
             return null;
         }
 
         String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
         cursor.close();
         if (TextUtils.isEmpty(path)) {
-            Log.d("TegDBag", "Result is empty.");
+            Timber.d( "Result is empty.");
             return null;
         }
 
-        Log.d("TegDBag", "file." + path);
+        Timber.d("file.%s ", path);
         return new File(path);
     }
 

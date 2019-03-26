@@ -15,7 +15,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +22,8 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +64,7 @@ public class UploadFragment extends Fragment {
         mRecyclerView.setAdapter(adapter);
 
         view.findViewById(R.id.click_me).setOnClickListener(v -> requestImage());
-        view.findViewById(R.id.click_me1).setOnClickListener(v -> downImg(MainActivity.SUB_ID));
+        view.findViewById(R.id.click_me1).setOnClickListener(v -> downImg());
 
         requestPermissions();
     }
@@ -86,7 +87,7 @@ public class UploadFragment extends Fragment {
         try {
             Uri uri = Uri.parse(intent.getData().toString());
             File file = FileUtils.getFileFromUri(getActivity(), uri);
-            UploadImage.uploadImage(MainActivity.SUB_ID, file, getActivity());
+            UploadImage.uploadImage(file, getActivity());
         } catch (Exception e) {
             Timber.w(e, "Cannot process intent from result.");
         }
@@ -107,8 +108,11 @@ public class UploadFragment extends Fragment {
     }
 
     private boolean isPermissionNotGranted() {
-        return ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED;
+        if (getActivity() != null) {
+            return ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED;
+        }
+        return false;
     }
 
     private void requestImage() {
@@ -118,37 +122,39 @@ public class UploadFragment extends Fragment {
         startActivityForResult(intent, READ_REQUEST_CODE);
     }
 
-    public void downImg(String sub_id) {
+    public void downImg() {
         Request request = new Request.Builder()
-                .header("x-api-key", "a00fade5-8415-4580-8fec-5fee491ce7ce")
-                .url("https://api.thedogapi.com/v1/images?limit=100&page=100&order=DESK&SUB_ID=" +
-                        sub_id + "&format=json&include_vote=1&include_favourite=1")
+                .header(ServerDogsConstant.API_KAY_NAME, ServerDogsConstant.API_KAY)
+                .url(ServerDogsConstant.URL_GET_UPLOADED_PHOTOS)
                 .build();
 
         Gson gson = new Gson();
         OkHttpClient mClient = new OkHttpClient();
         mClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d("TegDBag", e.toString());
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Timber.d(e.toString());
                 e.printStackTrace();
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful())
                         throw new IOException("Unexpected code" + response);
 
-                    String resp = responseBody.string();
-                    Type listType = new TypeToken<ArrayList<DogInfo>>() {
-                    }.getType();
-                    List<DogInfo> manyOfDogs = gson.fromJson(resp, listType);
-                    if (resp.equals("[]")) {
-                        new Handler(Looper.getMainLooper()).post(() ->
-                                Toast.makeText(getActivity(), "Нету загруженных фотографий", Toast.LENGTH_LONG).show());
-                    } else {
-                        installationOfPictures(manyOfDogs);
+                    if (responseBody != null) {
+                        String resp = responseBody.string();
+                        Type listType = new TypeToken<ArrayList<DogInfo>>() {
+                        }.getType();
+                        List<DogInfo> manyOfDogs = gson.fromJson(resp, listType);
+
+                        if (resp.equals("[]")) {
+                            new Handler(Looper.getMainLooper()).post(() ->
+                                    Toast.makeText(getActivity(), R.string.no_download_image, Toast.LENGTH_LONG).show());
+                        } else {
+                            installationOfPictures(manyOfDogs);
+                        }
                     }
                 }
             }

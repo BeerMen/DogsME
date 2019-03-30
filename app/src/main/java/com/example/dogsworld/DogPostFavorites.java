@@ -1,6 +1,6 @@
 package com.example.dogsworld;
 
- class DogPostFavorites {
+ public class DogPostFavorites {
 
     String image_id;
     String sub_id;

@@ -2,7 +2,7 @@ package com.example.dogsworld;
 
 import java.util.List;
 
- class DogInfo {
+  public class DogInfo {
     String id;
     String url;
     String image_id;

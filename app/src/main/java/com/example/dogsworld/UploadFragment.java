@@ -20,23 +20,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import org.jetbrains.annotations.NotNull;
+import com.example.dogsworld.network.NetworkApi;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 import timber.log.Timber;
 
 public class UploadFragment extends Fragment {
@@ -71,11 +60,10 @@ public class UploadFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             onFileResult(data);
         }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void onFileResult(Intent intent) {
@@ -87,7 +75,7 @@ public class UploadFragment extends Fragment {
         try {
             Uri uri = Uri.parse(intent.getData().toString());
             File file = FileUtils.getFileFromUri(getActivity(), uri);
-            UploadImage.uploadImage(file, getActivity());
+            new NetworkApi().postUploadImage(file,getActivity());
         } catch (Exception e) {
             Timber.w(e, "Cannot process intent from result.");
         }
@@ -123,40 +111,12 @@ public class UploadFragment extends Fragment {
     }
 
     public void downImg() {
-        Request request = new Request.Builder()
-                .header(ServerDogsConstant.API_KAY_NAME, ServerDogsConstant.API_KAY)
-                .url(ServerDogsConstant.URL_GET_UPLOADED_PHOTOS)
-                .build();
-
-        Gson gson = new Gson();
-        OkHttpClient mClient = new OkHttpClient();
-        mClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Timber.d(e.toString());
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful())
-                        throw new IOException("Unexpected code" + response);
-
-                    if (responseBody != null) {
-                        String resp = responseBody.string();
-                        Type listType = new TypeToken<ArrayList<DogInfo>>() {
-                        }.getType();
-                        List<DogInfo> manyOfDogs = gson.fromJson(resp, listType);
-
-                        if (resp.equals("[]")) {
-                            new Handler(Looper.getMainLooper()).post(() ->
-                                    Toast.makeText(getActivity(), R.string.no_download_image, Toast.LENGTH_LONG).show());
-                        } else {
-                            installationOfPictures(manyOfDogs);
-                        }
-                    }
-                }
+        new NetworkApi().getDownloadImage(manyOfDogs -> {
+            if (manyOfDogs.get(0).url.isEmpty()){
+                new Handler(Looper.getMainLooper()).post(() ->
+                               Toast.makeText(getActivity(), R.string.no_download_image, Toast.LENGTH_LONG).show());
+            }else {
+                installationOfPictures(manyOfDogs);
             }
         });
     }

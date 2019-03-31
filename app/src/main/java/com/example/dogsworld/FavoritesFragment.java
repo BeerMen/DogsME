@@ -11,9 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.dogsworld.network.NetworkApi;
+import com.example.dogsworld.network.NetworkService;
+import com.example.dogsworld.network.ServerDogsConstant;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import timber.log.Timber;
 
 public class FavoritesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
@@ -29,6 +36,7 @@ public class FavoritesFragment extends Fragment implements SwipeRefreshLayout.On
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.recycler);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -38,17 +46,29 @@ public class FavoritesFragment extends Fragment implements SwipeRefreshLayout.On
 
         swipeRefreshLayout = view.findViewById(R.id.swipe_container);
         swipeRefreshLayout.setOnRefreshListener(this);
-        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        getFavoriteList();
         super.onActivityCreated(savedInstanceState);
+        getFavoriteList();
     }
 
     public void getFavoriteList() {
-        new NetworkApi().getFavoriteList(this::setListFavorites);
+        NetworkService.getService().getJsonApi().getFavoriteList(ServerDogsConstant.SUB_ID_INT)
+                .enqueue(new Callback<List<DogInfo>>() {
+                    @Override
+                    public void onResponse(Call<List<DogInfo>> call, Response<List<DogInfo>> response) {
+                        if (response.body() != null) {
+                            setListFavorites(response.body());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<DogInfo>> call, Throwable t) {
+                        Timber.w(t);
+                    }
+                });
     }
 
     private void setListFavorites(List<DogInfo> manyOfDogs) {

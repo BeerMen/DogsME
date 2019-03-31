@@ -20,12 +20,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.dogsworld.network.NetworkApi;
+import com.example.dogsworld.network.ApiAnswer;
+import com.example.dogsworld.network.NetworkService;
+import com.example.dogsworld.network.ServerDogsConstant;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import timber.log.Timber;
 
 public class UploadFragment extends Fragment {
@@ -75,9 +83,48 @@ public class UploadFragment extends Fragment {
         try {
             Uri uri = Uri.parse(intent.getData().toString());
             File file = FileUtils.getFileFromUri(getActivity(), uri);
-            new NetworkApi().postUploadImage(file,getActivity());
+
+            getRequestBody(file);
         } catch (Exception e) {
             Timber.w(e, "Cannot process intent from result.");
+        }
+    }
+
+    public void getRequestBody(File file){
+        final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/png");
+        if (file != null) {
+            downloadFile(new MultipartBody.Builder().setType(MultipartBody.FORM)
+                    .addFormDataPart("SUB_ID", ServerDogsConstant.SUB_ID)
+                    .addFormDataPart("file", "file", RequestBody.create(MEDIA_TYPE_PNG, file))
+                    .build());
+        }
+    }
+
+    public void downloadFile(RequestBody requestBody){
+        NetworkService.getService().getJsonApi().postUploadImage(requestBody).enqueue(new Callback<ApiAnswer>() {
+                    @Override
+                    public void onResponse(Call<ApiAnswer> call, Response<ApiAnswer> response) {
+                        if (response.body() != null) {
+                            responseStatus(response.body());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiAnswer> call, Throwable t) {
+                        Timber.w(t);
+                    }
+                });
+    }
+
+    public void responseStatus(ApiAnswer apiAnswer) {
+        if (apiAnswer.getStatus() == 400) {
+            new Handler(Looper.getMainLooper()).post(() ->
+                    Toast.makeText(getActivity(), R.string.no_dog
+                            , Toast.LENGTH_LONG).show());
+        } else {
+            new Handler(Looper.getMainLooper()).post(() ->
+                    Toast.makeText(getActivity(), R.string.good_upload,
+                            Toast.LENGTH_LONG).show());
         }
     }
 
@@ -111,14 +158,32 @@ public class UploadFragment extends Fragment {
     }
 
     public void downImg() {
-        new NetworkApi().getDownloadImage(manyOfDogs -> {
-            if (manyOfDogs.get(0).url.isEmpty()){
-                new Handler(Looper.getMainLooper()).post(() ->
-                               Toast.makeText(getActivity(), R.string.no_download_image, Toast.LENGTH_LONG).show());
-            }else {
-                installationOfPictures(manyOfDogs);
+        NetworkService.getService().getJsonApi().getDownloadImage(100,
+                100,
+                "DESK",
+                ServerDogsConstant.SUB_ID_INT,
+                "json",
+                1,
+                1).enqueue(new Callback<List<DogInfo>>() {
+            @Override
+            public void onResponse(Call<List<DogInfo>> call, Response<List<DogInfo>> response) {
+                checkingUploadedPhotos(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<DogInfo>> call, Throwable t) {
+                Timber.w(t);
             }
         });
+    }
+
+    public void checkingUploadedPhotos(List<DogInfo> manyOfDogs){
+        if (manyOfDogs.get(0).url.isEmpty()) {
+                new Handler(Looper.getMainLooper()).post(() ->
+                        Toast.makeText(getActivity(), R.string.no_download_image, Toast.LENGTH_LONG).show());
+            } else {
+                installationOfPictures(manyOfDogs);
+            }
     }
 
     public void installationOfPictures(List<DogInfo> dogs) {

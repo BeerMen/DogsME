@@ -1,7 +1,7 @@
 package com.example.dogsworld.network;
 
 public class ServerDogsConstant {
-    static final int SUB_ID_INT = 44332213;
+    public static final int SUB_ID_INT = 44332213;
 
     public static final String SUB_ID = Integer.toString(SUB_ID_INT);
 

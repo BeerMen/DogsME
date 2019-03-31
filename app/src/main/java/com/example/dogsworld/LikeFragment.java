@@ -12,11 +12,19 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.dogsworld.network.NetworkApi;
+import com.example.dogsworld.network.ApiAnswer;
+import com.example.dogsworld.network.NetworkService;
 import com.example.dogsworld.network.ServerDogsConstant;
 import com.squareup.picasso.Picasso;
+
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import timber.log.Timber;
 
 public class LikeFragment extends Fragment implements View.OnClickListener {
     private ImageView likeImage;
@@ -25,12 +33,10 @@ public class LikeFragment extends Fragment implements View.OnClickListener {
 
     private List<DogInfo> postDogInfo;
 
-    private NetworkApi networkApi;
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        getDogsFromApi();
         super.onActivityCreated(savedInstanceState);
+        getDogsFromApi();
     }
 
     @Nullable
@@ -41,7 +47,7 @@ public class LikeFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
+        super.onViewCreated(view, savedInstanceState);
         textName = view.findViewById(R.id.text_name_dog);
         textCharacteristic = view.findViewById(R.id.text_characteristic_dog);
         likeImage = view.findViewById(R.id.image_like);
@@ -57,16 +63,20 @@ public class LikeFragment extends Fragment implements View.OnClickListener {
         ImageView btnDisLike;
         btnDisLike = view.findViewById(R.id.dislike);
         btnDisLike.setOnClickListener(this);
-
-        networkApi = new NetworkApi();
-
-        super.onViewCreated(view, savedInstanceState);
     }
 
     public void getDogsFromApi() {
-        networkApi.getRandomDogs(manyOfDogs -> {
-            postDogInfo = manyOfDogs;
-            assignmentView(manyOfDogs);
+        NetworkService.getService().getJsonApi().getRandomDog().enqueue(new Callback<List<DogInfo>>() {
+            @Override
+            public void onResponse(Call<List<DogInfo>> call, Response<List<DogInfo>> response) {
+                postDogInfo = response.body();
+                assignmentView(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<DogInfo>> call, Throwable t) {
+                Timber.w(t);
+            }
         });
     }
 
@@ -86,12 +96,53 @@ public class LikeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
+    public void postLike() {
+        NetworkService.getService().getJsonApi().postLike(new DogPost(postDogInfo.get(0).id,
+                        1,
+                        ServerDogsConstant.SUB_ID),
+                ServerDogsConstant.SUB_ID_INT).enqueue(new Callback<DogInfo>() {
+            @Override
+            public void onResponse(Call<DogInfo> call, Response<DogInfo> response) {
+                Timber.d(response.message());
+            }
+
+            @Override
+            public void onFailure(Call<DogInfo> call, Throwable t) {
+                Timber.w(t);
+            }
+        });
+    }
+
+    public void postFavorite() {
+        NetworkService.getService().getJsonApi().postFavorite(new DogPostFavorites(postDogInfo.get(0).id,
+                        ServerDogsConstant.SUB_ID),
+                ServerDogsConstant.SUB_ID_INT).enqueue(new Callback<ApiAnswer>() {
+            @Override
+            public void onResponse(Call<ApiAnswer> call, Response<ApiAnswer> response) {
+                responseStatus(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ApiAnswer> call, Throwable t) {
+                Timber.w(t);
+            }
+        });
+    }
+
+    public void responseStatus(ApiAnswer apiAnswer) {
+        if (apiAnswer.getStatus() == 400) {
+            new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getActivity(),
+                    R.string.already_added_favorites,
+                    Toast.LENGTH_LONG).show());
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.like:
                 if (postDogInfo != null) {
-                    networkApi.postLike(new DogPost(postDogInfo.get(0).id,1, ServerDogsConstant.SUB_ID));
+                    postLike();
                     getDogsFromApi();
                     break;
                 }
@@ -99,7 +150,7 @@ public class LikeFragment extends Fragment implements View.OnClickListener {
 
             case R.id.btn_favorite:
                 if (postDogInfo != null) {
-                    networkApi.postFavorite(new DogPostFavorites(postDogInfo.get(0).id,ServerDogsConstant.SUB_ID),getActivity());
+                    postFavorite();
                     break;
                 }
                 break;
